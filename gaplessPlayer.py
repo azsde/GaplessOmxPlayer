@@ -91,8 +91,11 @@ class GaplessPlayer:
             print("Current player is A, preparing B")
             if (self.player_B is not None):
                 self.player_B.quit()
+            # Since OmxPlayer sucks ass and cannot be started while on mute, we have to set the volume
+            # to a stupidly high value (10000) so that it will overflow and start the player in a muted state.
+            # Thus, passing --vol 100000 argument.
             self.player_B = OMXPlayer(next_video,
-                args=['--layer', 0],
+                args=['--layer', 0, '--vol', 100000],
                 dbus_name='org.mpris.MediaPlayer2.omxplayerB')
             self.player_B.playerIdentifier = "Player B - " + next_video
             self.player_B.dbus_name = "org.mpris.MediaPlayer2.omxplayerB"
@@ -101,8 +104,11 @@ class GaplessPlayer:
             print("Current player is B, preparing A ")
             if (self.player_A is not None):
                 self.player_A.quit()
+            # Since OmxPlayer sucks ass and cannot be started while on mute, we have to set the volume
+            # to a stupidly high value (10000) so that it will overflow and start the player in a muted state.
+            # Thus, passing --vol 100000 argument.
             self.player_A = OMXPlayer(next_video,
-                args=['--layer', 0],
+                args=['--layer', 0, '--vol', 100000],
                 dbus_name='org.mpris.MediaPlayer2.omxplayerA')
             self.player_A.dbus_name = "org.mpris.MediaPlayer2.omxplayerA"
             self.player_A.playerIdentifier = "Player A - " + next_video
@@ -114,8 +120,11 @@ class GaplessPlayer:
                 self.player_A.quit()
             if (self.player_B is not None):
                 self.player_B.quit()
+            # Since OmxPlayer sucks ass and cannot be started while on mute, we have to set the volume
+            # to a stupidly high value (10000) so that it will overflow and start the player in a muted state.
+            # Thus, passing --vol 100000 argument.
             self.player_A = OMXPlayer(next_video,
-                args=['--layer', 0],
+                args=['--layer', 0, '--vol', 100000],
                 dbus_name='org.mpris.MediaPlayer2.omxplayerA')
             self.player_A.dbus_name = "org.mpris.MediaPlayer2.omxplayerA"
             self.player_A.playerIdentifier = "Player A - " + next_video
@@ -130,8 +139,11 @@ class GaplessPlayer:
             print("Current player is C, preparing D")
             if (self.player_D is not None):
                 self.player_D.quit()
+            # Since OmxPlayer sucks ass and cannot be started while on mute, we have to set the volume
+            # to a stupidly high value (10000) so that it will overflow and start the player in a muted state.
+            # Thus, passing --vol 100000 argument.
             self.player_D = OMXPlayer(previous_video,
-                args=['--layer', 0],
+                args=['--layer', 0, '--vol', 100000],
                 dbus_name='org.mpris.MediaPlayer2.omxplayerD')
             self.player_D.playerIdentifier = "Player D - " + previous_video
             self.player_D.dbus_name = "org.mpris.MediaPlayer2.omxplayerD"
@@ -140,8 +152,11 @@ class GaplessPlayer:
             print("Current player is D, preparing C")
             if (self.player_C is not None):
                 self.player_C.quit()
+            # Since OmxPlayer sucks ass and cannot be started while on mute, we have to set the volume
+            # to a stupidly high value (10000) so that it will overflow and start the player in a muted state.
+            # Thus, passing --vol 100000 argument.
             self.player_C = OMXPlayer(previous_video,
-                args=['--layer', 0],
+                args=['--layer', 0, '--vol', 100000],
                 dbus_name='org.mpris.MediaPlayer2.omxplayerC')
             self.player_C.dbus_name = "org.mpris.MediaPlayer2.omxplayerC"
             self.player_C.playerIdentifier = "Player C - " + previous_video
@@ -153,8 +168,11 @@ class GaplessPlayer:
                 self.player_C.quit()
             if (self.player_D is not None):
                 self.player_D.quit()
+            # Since OmxPlayer sucks ass and cannot be started while on mute, we have to set the volume
+            # to a stupidly high value (10000) so that it will overflow and start the player in a muted state.
+            # Thus, passing --vol 100000 argument.
             self.player_C = OMXPlayer(previous_video,
-                args=['--layer', 0],
+                args=['--layer', 0, '--vol', 100000],
                 dbus_name='org.mpris.MediaPlayer2.omxplayerC')
             self.player_C.dbus_name = "org.mpris.MediaPlayer2.omxplayerC"
             self.player_C.playerIdentifier = "Player A - " + previous_video
@@ -177,7 +195,7 @@ class GaplessPlayer:
         self.definePreviousPlayer()
 
         # Sleep required otherwise the player will NOT be ready when doing the play/pause
-        # This is really ugly practice but it doesn not seem that a more robust way is possible
+        # This is really ugly practice but it does not seem that a more robust way is possible
         sleep(2)
 
         # Ugly hack to have the player paused on the first frames, play and pause again
@@ -285,6 +303,9 @@ class GaplessPlayer:
             # Start playback of current player
             print("Starting play of current player : ", self.current_player.playerIdentifier)
             self.save_video_index(self.current_video_index)
+
+            # Set the volume to the default value (1) in order to restore audio that was muted when preparing the player.
+            self.current_player.set_volume(1)
             self.current_player.play()
             self.current_player.set_layer(10)
             self.ready_for_next_previous = True
@@ -308,7 +329,7 @@ class GaplessPlayer:
 if __name__ == '__main__':
 
     # Instanciate GaplessPlayer
-    gapless_player = GaplessPlayer("/home/azsde/")
+    gapless_player = GaplessPlayer("/home/azsde/SimpsonTv")
 
     # Hook keyboard key pressed
     keyboard.on_press(gapless_player.on_key_press)
